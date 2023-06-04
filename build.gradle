@@ -51,6 +51,26 @@ dependencies {
     implementation 'com.github.ulisesbocchio:jasypt-spring-boot-starter:3.0.4'
     //logback 관련 라이브러리
     implementation group: 'com.github.maricn', name: 'logback-slack-appender', version: '1.6.1'
+    /*jwt 시작*/
+    implementation group: 'io.jsonwebtoken', name: 'jjwt-api', version: '0.11.5'
+    runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-impl', version: '0.11.5'
+    runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-jackson', version: '0.11.5'
+    /*jwt 끝*/
+    // 카카오 API 및 인증 처리 라이브러리
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+
+    //access token을 가져오거나 유저 정보를 가져올 때는 실제로 Oauth 서버와 통신을 해야 하기 때문에 WebClient를 사용하여 통신을 위한 WebFlux 추가
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+
+    //gson
+    implementation 'com.google.code.gson:gson:2.8.8'
+
+    //refresh token 저장을 위한 redis
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
+    //swagger
+    implementation 'io.springfox:springfox-boot-starter:3.0.0'
+    implementation 'io.springfox:springfox-swagger-ui:3.0.0'
 }
 
 tasks.named('test') {

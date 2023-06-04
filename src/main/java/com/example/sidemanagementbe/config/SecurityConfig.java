@@ -1,17 +1,26 @@
 package com.example.sidemanagementbe.config;
 
+
+import com.example.sidemanagementbe.security.util.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientProperties;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import com.example.sidemanagementbe.security.filter.JwtTokenValidationFilter;
 
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.www.BasicAuthenticationEntryPoint;
 
 
 /**
@@ -24,30 +33,57 @@ import org.springframework.security.web.SecurityFilterChain;
 @RequiredArgsConstructor
 @Slf4j
 public class SecurityConfig {
+    private static final String[] AUTH_LIST = {
+            // -- swagger ui
+            "**/swagger-resources/**",
+            "/swagger-ui.html",
+            "/v2/api-docs",
+            "/webjars/**"
+    };
+    private final JwtTokenProvider jwtTokenProvider;
     @Bean
-    PasswordEncoder passwordEncoder(){
+    PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+
+
+    @Bean
+    JwtTokenValidationFilter jwtTokenValidationFilter(){
+        return new JwtTokenValidationFilter(new RedisTemplate<String,String>(), jwtTokenProvider.getSecretKey(), jwtTokenProvider.getAccessTokenValidityInMilliseconds());
     }
 
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        log.info("filterChain 접속");
         http
                 .authorizeRequests()
                 .antMatchers("/h2-console/**").permitAll()
+                .antMatchers("/login/oauth/kakao/**").permitAll()
+                .antMatchers("/access-token").permitAll()
+                .antMatchers("/swagger-ui.html", "/swagger-ui/**","/swagger-resources/**", "/v3/api-docs/**", "/v2/api-docs", "/webjars/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .headers()
                 .frameOptions().disable()
                 .and()
-                .formLogin()
-                .permitAll()
-                .and()
+                .formLogin().disable()
+                .httpBasic().disable()
+                .csrf().disable()
                 .logout()
                 .permitAll()
                 .and()
                 .csrf().disable();
+        http.addFilterBefore(jwtTokenValidationFilter(), UsernamePasswordAuthenticationFilter.class);
         return http.build();
+    }
+
+    @Bean
+    public BasicAuthenticationEntryPoint swaggerAuthenticationEntryPoint() {
+        BasicAuthenticationEntryPoint entryPoint = new BasicAuthenticationEntryPoint();
+        entryPoint.setRealmName("Swagger Realm");
+        return entryPoint;
     }
 
 

@@ -48,7 +48,7 @@ public class JasyptConfig {
     }
 
     @Bean("jasyptStringEncryptor")
-    public StringEncryptor stringEncryptor(@Value("${jasypt.encryptor.password-file}") String passwordFile)  {
+    public StringEncryptor stringEncryptor(@Value("${jasypt.encryptor.password-file}") String passwordFile) {
         StandardPBEStringEncryptor encryptor = new StandardPBEStringEncryptor();
         try {
             File file = ResourceUtils.getFile(passwordFile);
