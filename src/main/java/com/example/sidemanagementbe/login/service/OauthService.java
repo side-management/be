@@ -6,6 +6,7 @@ import com.example.sidemanagementbe.login.dto.OAuth2UserInfo;
 import com.example.sidemanagementbe.login.dto.OauthTokenResponse;
 import com.example.sidemanagementbe.login.entity.Gender;
 import com.example.sidemanagementbe.login.entity.Member;
+import com.example.sidemanagementbe.login.entity.MemberRole;
 import com.example.sidemanagementbe.login.entity.RefreshToken;
 import com.example.sidemanagementbe.login.repository.MemberRepository;
 import com.example.sidemanagementbe.login.repository.RefreshTokenRepository;
@@ -54,8 +55,10 @@ public class OauthService {
         refreshTokenRepository.save(refreshTokenEntity);
         return LoginResponse.builder()
                 .id(member.getId())
+                .imageUrl(member.getImageUrl())
+                .nickName(member.getNickName())
                 .email(member.getEmail())
-                .role(member.getRole())
+                .role(MemberRole.USER)
                 .tokenType(BEARER_TYPE)
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
