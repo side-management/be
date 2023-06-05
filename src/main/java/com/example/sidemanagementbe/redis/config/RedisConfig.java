@@ -1,4 +1,4 @@
-package com.example.sidemanagementbe.login.config;
+package com.example.sidemanagementbe.redis.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;

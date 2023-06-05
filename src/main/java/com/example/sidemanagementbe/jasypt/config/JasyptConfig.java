@@ -1,4 +1,4 @@
-package com.example.sidemanagementbe.login.config;
+package com.example.sidemanagementbe.jasypt.config;
 
 import com.ulisesbocchio.jasyptspringboot.annotation.EnableEncryptableProperties;
 import java.io.File;

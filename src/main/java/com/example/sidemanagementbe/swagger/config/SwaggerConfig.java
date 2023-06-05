@@ -1,4 +1,4 @@
-package com.example.sidemanagementbe.login.config;
+package com.example.sidemanagementbe.swagger.config;
 
 
 import org.springframework.context.annotation.Bean;
