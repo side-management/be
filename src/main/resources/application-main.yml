@@ -2,12 +2,23 @@ server:
   port: 8080
 
 spring:
+  profiles:
+    activate:
+      on-profile: master
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+  redis:
+    host: localhost
+    port: 6379
+  h2:
+    console:
+      enabled: false
   datasource:
-    url: jdbc:mysql://localhost:3306/mydatabase?useSSL=false&serverTimezone=UTC
-    username: myuser
-    password: mypassword
+    url: jdbc:mysql://localhost:3306/side-management
+    username: ENC(Q9HpznBD7U06+cv77G+quQ==)
+    password: ENC(vyz7S+qqJmB+hTfAaIqpHA==)
     driverClassName: com.mysql.cj.jdbc.Driver
-
   jpa:
     hibernate:
       ddl-auto: create
