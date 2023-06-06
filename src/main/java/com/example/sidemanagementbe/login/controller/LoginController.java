@@ -41,9 +41,20 @@ public class LoginController {
         return ResponseEntity.ok().body(loginResponse);
     }
 
+    @Operation(summary = "access token 재발급 API", description = "Redis Cache에 refresh token 조회 후 유효한 경우 access token 재발급")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "access token 재발급 성공", content = @Content(schema = @Schema(implementation = AccessTokenResponse.class))),
+            @ApiResponse(responseCode = "400", description = "Bad Request - 재발급 실패")
+    })
     @PostMapping("/access-token")
-    public ResponseEntity<AccessTokenResponse> generateNewAccessToken(@RequestBody final AccessTokenRequest request) {
-        AccessTokenResponse accessTokenResponse = tokenService.generateAccessToken(request);
+    public ResponseEntity<AccessTokenResponse> regenerateAccessToken(@RequestBody final AccessTokenRequest request) {
+        AccessTokenResponse accessTokenResponse = tokenService.regenerateAccessToken(request);
         return ResponseEntity.ok(accessTokenResponse);
     }
+
+    @GetMapping("/test")
+    public String test() {
+        return "hello";
+    }
+
 }

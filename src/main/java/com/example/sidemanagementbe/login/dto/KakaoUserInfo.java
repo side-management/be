@@ -6,7 +6,8 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class KakaoUserInfo implements OAuth2UserInfo {
-    private Map<String, Object> attributes;
+
+    private final Map<String, Object> attributes;
 
     public KakaoUserInfo(Map<String, Object> userAttributes) {
         this.attributes = userAttributes;
@@ -35,7 +36,7 @@ public class KakaoUserInfo implements OAuth2UserInfo {
     @Override
     public Gender getGender() {
         String gender = (String) attributes.get("gender");
-        log.info("gender 값:" + gender);
+
         if (gender.equals("male")) {
             return Gender.MAN;
         } else {

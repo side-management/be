@@ -1,27 +1,27 @@
 package com.example.sidemanagementbe.login.security.filter;
 
 import com.example.sidemanagementbe.login.dto.KakaoUserInfo;
+import com.example.sidemanagementbe.login.security.util.JwtTokenProvider;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
-import io.jsonwebtoken.Jwts;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -32,21 +32,17 @@ public class JwtTokenValidationFilter extends OncePerRequestFilter {
     private static final String TOKEN_PREFIX = "Bearer ";
     private static final String HEADER_AUTHORIZATION = "Authorization";
 
-    private final RedisTemplate<String, String> redisTemplate;
-    private final String secretKey;
-    private final long tokenExpirationMillis;
+    private final JwtTokenProvider jwtTokenProvider;
 
-    public JwtTokenValidationFilter(RedisTemplate<String, String> redisTemplate, String secretKey,
-                                    long tokenExpirationMillis) {
-        this.redisTemplate = redisTemplate;
-        this.secretKey = secretKey;
-        this.tokenExpirationMillis = tokenExpirationMillis;
+    public JwtTokenValidationFilter(JwtTokenProvider jwtTokenProvider) {
+        this.jwtTokenProvider = jwtTokenProvider;
+
     }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-        log.info("-------------------JwtTokenValidationFilter CALL--------------");
+        //스킵해야 할 url 지정
         if (shouldSkipValidation(request)) {
             try {
                 filterChain.doFilter(request, response);
@@ -58,12 +54,23 @@ public class JwtTokenValidationFilter extends OncePerRequestFilter {
             return;
         }
 
+        log.info("-------------------JwtTokenValidationFilter CALL-------------------");
+        log.info("-------------------request URI: " + request.getRequestURI() + "---------------");
+
         String token = extractToken(request);
+        Long memberId = Long.parseLong(jwtTokenProvider.getMemberId(token));
 
         try {
-            if (token != null && validateToken(token)) {
-//                Authentication authentication = getAuthentication(token);
-//                SecurityContextHolder.getContext().setAuthentication(authentication);
+            if (token != null && jwtTokenProvider.validateToken(token)) {
+                // 권한 부여
+                UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
+                        memberId, null, List.of(new SimpleGrantedAuthority("USER")));
+
+                // Detail을 넣어줌
+                authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+                log.info("[+] Token in SecurityContextHolder");
+                filterChain.doFilter(request, response);
             }
         } catch (ExpiredJwtException expiredJwtException) {
             // Handle expired token exception
@@ -84,32 +91,20 @@ public class JwtTokenValidationFilter extends OncePerRequestFilter {
 
     private boolean shouldSkipValidation(HttpServletRequest request) {
         RequestMatcher requestMatcher = new AntPathRequestMatcher("/access-token", "POST");
-        return requestMatcher.matches(request);
+        String path = request.getRequestURI();
+
+        return requestMatcher.matches(request) || path.startsWith("/login")
+                || path.startsWith("/swagger") || path.startsWith("/v2") || path.startsWith("/v3") || path.startsWith(
+                "/favicon.ico") || path.startsWith("/h2-console");
     }
 
     private String extractToken(HttpServletRequest request) {
         String token = request.getHeader(HEADER_AUTHORIZATION);
+
         if (token != null && token.startsWith(TOKEN_PREFIX)) {
             return token.substring(TOKEN_PREFIX.length());
         }
         return null;
-    }
-
-    private boolean validateToken(String token) {
-        // Check if token is present in Redis cache
-        if (redisTemplate.hasKey(token)) {
-            return true;
-        }
-
-        try {
-            // Validate token using secret key
-            Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token);
-            // Add token to Redis cache with expiration time
-            redisTemplate.opsForValue().set(token, "valid", tokenExpirationMillis, TimeUnit.MILLISECONDS);
-            return true;
-        } catch (JwtException jwtException) {
-            return false;
-        }
     }
 
     private Authentication getAuthentication(String token) {

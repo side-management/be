@@ -38,26 +38,38 @@ public class JwtTokenProvider {
 
     private String secretKey;
 
-    public String createAccessToken(String payload) {
+    public String createAccessToken(Map<String, Object> claims) {
         log.info("accessTokenValidityInMilliseconds 값:" + accessTokenValidityInMilliseconds);
-        log.info("payload 값:" + payload);
-        return createToken(payload, accessTokenValidityInMilliseconds);
+        return createToken(claims, accessTokenValidityInMilliseconds);
     }
 
     public String createRefreshToken() {
         byte[] array = new byte[7];
         new Random().nextBytes(array);
+        Map<String, Object> claims = new HashMap<>();
+
         String generatedString = new String(array, StandardCharsets.UTF_8);
-        return createToken(generatedString, refreshTokenValidityInMilliseconds);
+        claims.put("random byte", generatedString);
+        return createToken(claims, refreshTokenValidityInMilliseconds);
     }
 
 
-    public String createToken(String payload, long expirationTimeInMillis) {
+    public String createToken(Map<String, Object> claims, long expirationTimeInMillis) {
         return Jwts.builder()
-                .setSubject(payload)
+                .setClaims(claims)
                 .setExpiration(new Date(System.currentTimeMillis() + expirationTimeInMillis))
                 .signWith(SignatureAlgorithm.HS256, getSecretKey())
                 .compact();
+    }
+
+    public Claims decodeJwtPayload(String jwtToken) {
+        Jws<Claims> jws = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(jwtToken);
+        return jws.getBody();
+    }
+
+    public String getMemberId(String token) {
+        Map<String, Object> payloadMap = getPayload(token);
+        return (String) payloadMap.get("id");
     }
 
     @PostConstruct
@@ -89,52 +101,36 @@ public class JwtTokenProvider {
         return secretKey;
     }
 
-    public String getPayload(String token) {
+    public Claims getPayload(String token) {
         try {
             return Jwts.parserBuilder()
                     .setSigningKey(secretKey)
                     .build()
                     .parseClaimsJws(token)
-                    .getBody()
-                    .getSubject();
+                    .getBody();
         } catch (ExpiredJwtException e) {
-            return e.getClaims().getSubject();
+            return e.getClaims();
         } catch (JwtException e) {
             throw new RuntimeException("유효하지 않은 토큰 입니다");
         }
     }
 
-    public Long validateAccessToken(String accessToken) {
+    public boolean validateToken(String token) {
         String secretKey = getSecretKey();
-        try {
-            Jws<Claims> claimsJws = Jwts.parserBuilder()
-                    .setSigningKey(secretKey)
-                    .build()
-                    .parseClaimsJws(accessToken);
 
-            // 토큰의 만료 여부 검사
-            Date expirationDate = claimsJws.getBody().getExpiration();
-            if (Instant.now().isAfter(expirationDate.toInstant())) {
-                throw new BadCredentialsException("Access token has expired");
-            }
+        // 토큰의 변조 여부 검사
+        Jws<Claims> claimsJws = Jwts.parserBuilder()
+                .setSigningKey(secretKey)
+                .build()
+                .parseClaimsJws(token);
 
-            // 토큰의 변조 여부 검사
-            String originalSignature = claimsJws.getSignature();
-            String calculatedSignature = Jwts.builder()
-                    .setPayload(claimsJws.getBody().toString())
-                    .signWith(SignatureAlgorithm.HS256, getSecretKey())
-                    .compact();
-            if (!originalSignature.equals(calculatedSignature)) {
-                throw new BadCredentialsException("Invalid access token");
-            }
-
-            // 예시: 토큰에서 memberId 추출하기
-            String memberId = claimsJws.getBody().get("memberId", String.class);
-            return Long.parseLong(memberId);
-
-        } catch (Exception e) {
-            // 토큰 검증 실패 시 예외 처리합니다.
-            throw new BadCredentialsException("Invalid access token");
+        // 토큰의 만료 여부 검사
+        Date expirationDate = claimsJws.getBody().getExpiration();
+        if (Instant.now().isAfter(expirationDate.toInstant())) {
+            throw new BadCredentialsException("Access token has expired");
         }
+
+        return true;
     }
+
 }

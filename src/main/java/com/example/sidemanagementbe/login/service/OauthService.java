@@ -4,16 +4,17 @@ import com.example.sidemanagementbe.login.dto.KakaoUserInfo;
 import com.example.sidemanagementbe.login.dto.LoginResponse;
 import com.example.sidemanagementbe.login.dto.OAuth2UserInfo;
 import com.example.sidemanagementbe.login.dto.OauthTokenResponse;
+import com.example.sidemanagementbe.login.dto.RefreshTokenDto;
 import com.example.sidemanagementbe.login.entity.Gender;
 import com.example.sidemanagementbe.login.entity.Member;
 import com.example.sidemanagementbe.login.entity.MemberRole;
-import com.example.sidemanagementbe.login.entity.RefreshToken;
 import com.example.sidemanagementbe.login.repository.MemberRepository;
 import com.example.sidemanagementbe.login.repository.RefreshTokenRepository;
 import com.example.sidemanagementbe.login.security.util.JwtTokenProvider;
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -45,14 +46,22 @@ public class OauthService {
         OauthTokenResponse tokenResponse = getToken(code, provider);
         Member member = getMemberProfile(providerName, tokenResponse, provider);
 
-        log.info("member Id 값:" + member.getId());
-        String accessToken = jwtTokenProvider.createAccessToken(String.valueOf(member.getId()));
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("id", String.valueOf(member.getId()));
+        claims.put("role", member.getRole());
+        claims.put("random UUID", UUID.randomUUID().toString());
+
+        String accessToken = jwtTokenProvider.createAccessToken(claims);
         String refreshToken = jwtTokenProvider.createRefreshToken();
-        RefreshToken refreshTokenEntity = RefreshToken.builder()
+
+        RefreshTokenDto tokenDto = RefreshTokenDto.builder()
                 .memberId(member.getId())
                 .refreshToken(refreshToken)
                 .build();
-        refreshTokenRepository.save(refreshTokenEntity);
+
+        //Redis Cache에 refresh 토큰 저장
+        refreshTokenRepository.save(tokenDto);
+
         return LoginResponse.builder()
                 .id(member.getId())
                 .imageUrl(member.getImageUrl())
@@ -113,17 +122,12 @@ public class OauthService {
         String imageUrl = oauth2UserInfo.getImageUrl();
 
         Member memberEntity = memberRepository.findByEmail(email);
-        log.info("hi1");
-        log.info("provide:" + provide);
-        log.info("provide id:" + providerId);
-        log.info("nickName:" + nickName);
-        log.info("email:" + email);
-        log.info("imageUrl:" + imageUrl);
-        log.info("hi2");
+
         if (memberEntity == null) {
 
-            memberEntity = Member.createMember(email, nickName, gender, provide, providerId, imageUrl);
-            log.info("여기까지 옴" + memberEntity);
+            //일단 명시적으로 role를 USER 세팅, 차후 ADMIN 필요한 경우 추가할 것
+            memberEntity = Member.createMember(email, nickName, gender, provide, providerId, imageUrl, MemberRole.USER);
+
             memberRepository.save(memberEntity);
         }
 
@@ -148,8 +152,6 @@ public class OauthService {
         String imageUrl = response.path("kakao_account").path("profile").path("profile_image_url").asText();
         String providerId = response.path("id").asText();
         String providerNm = "kakao";
-        log.info("값 222:" + imageUrl);
-        // ...
 
         // 사용자 속성을 Map으로 반환
         Map<String, Object> userAttributes = new HashMap<>();

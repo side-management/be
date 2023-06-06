@@ -2,16 +2,15 @@ package com.example.sidemanagementbe.login.service;
 
 import com.example.sidemanagementbe.login.dto.AccessTokenRequest;
 import com.example.sidemanagementbe.login.dto.AccessTokenResponse;
-import com.example.sidemanagementbe.login.entity.RefreshToken;
 import com.example.sidemanagementbe.login.exception.InvalidRefreshTokenException;
 import com.example.sidemanagementbe.login.repository.RefreshTokenRepository;
 import com.example.sidemanagementbe.login.security.util.JwtTokenProvider;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-import java.util.Date;
-import java.util.Optional;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
@@ -21,42 +20,32 @@ public class TokenService {
     private final RefreshTokenRepository refreshTokenRepository;
     private final JwtTokenProvider jwtTokenProvider;
 
-    public void saveRefreshToken(Long memberId, String refreshToken) {
-        RefreshToken token = RefreshToken.builder()
-                .memberId(memberId)
-                .refreshToken(refreshToken)
-                .build();
+    private final RedisTemplate<String, String> redisTemplate;
 
-        refreshTokenRepository.save(token);
-    }
+    public AccessTokenResponse regenerateAccessToken(final AccessTokenRequest request) {
 
-    public String getRefreshToken(String tokenId) {
-        RefreshToken token = refreshTokenRepository.findById(tokenId).orElse(null);
-        return (token != null) ? token.getRefreshToken() : null;
-    }
-
-    public void deleteByRefreshToken(String refreshToken) {
-        refreshTokenRepository.deleteByRefreshToken(refreshToken);
-    }
-
-    public AccessTokenResponse generateAccessToken(final AccessTokenRequest request) {
-
-        Optional<RefreshToken> refreshToken1 = refreshTokenRepository.findById(request.getRefreshToken());
-        RefreshToken refreshToken3 = refreshToken1.get();
-        log.info("regreshToken 값:" + refreshToken3.getRefreshToken());
-        RefreshToken refreshToken = refreshTokenRepository.findById(request.getRefreshToken())
+        //refresh token이 redis 캐시에 존재하는지 검증
+        refreshTokenRepository.findById(request.getRefreshToken())
                 .orElseThrow(InvalidRefreshTokenException::new);
-        String token = refreshToken.getRefreshToken();
 
-        Date now = new Date();
-        Date expiration = new Date(now.getTime() + jwtTokenProvider.getAccessTokenValidityInMilliseconds());
+        if (!jwtTokenProvider.validateToken(request.getRefreshToken())) {
+            throw new InvalidRefreshTokenException();
+        }
 
-        String accessToken = Jwts.builder()
-                .signWith(SignatureAlgorithm.HS256, jwtTokenProvider.getSecretKey())
-                .setIssuedAt(now)
-                .setExpiration(expiration)
-                .setSubject(token)
-                .compact();
+        //redis 캐시에 기존 accessToken 삭제
+        if (redisTemplate.hasKey(request.getAccessToken())) {
+            redisTemplate.delete(request.getAccessToken());
+        }
+
+        Map<String, Object> claims = jwtTokenProvider.getPayload(request.getAccessToken());
+
+        //기존 accessToken의 random UUID만 변경해서 다시 생성
+        claims.put("random UUID", UUID.randomUUID().toString());
+        String accessToken = jwtTokenProvider.createAccessToken(claims);
+
+        //redis cache에 새로운 accessToken 저장
+        redisTemplate.opsForValue().set(accessToken, "valid", jwtTokenProvider.getAccessTokenValidityInMilliseconds(),
+                TimeUnit.MILLISECONDS);
 
         return new AccessTokenResponse(accessToken);
     }

@@ -69,8 +69,15 @@ public class Member {
     }
 
     public static Member createMember(String email, String nickName, Gender gender, String provider, String providerId,
-                                      String imageUrl) {
-        return Member.builder().email(email).nickName(nickName).gender(gender).provider(provider).providerId(providerId)
-                .imageUrl(imageUrl).build();
+                                      String imageUrl, MemberRole role) {
+        return Member.builder()
+                .email(email)
+                .nickName(nickName)
+                .gender(gender)
+                .provider(provider)
+                .providerId(providerId)
+                .imageUrl(imageUrl)
+                .role(role)
+                .build();
     }
 }
