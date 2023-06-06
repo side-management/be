@@ -97,9 +97,9 @@ class LoginControllerTest {
 
         //when
         //userId 입력하기
-        String userId = "nick1324@naver.com";
+        String userId = "";
         //userPw 입력하기
-        String userPw = "jayyou!3204";
+        String userPw = "";
         String code = getResponseCode(requestUrl, userId, userPw);
 
         //then
