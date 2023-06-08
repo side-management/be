@@ -33,10 +33,19 @@ public class JwtTokenProvider {
 
     private Map<String, String> keyValues;
 
-    @Value("C:/secret-key/jwt-secret-key.txt")
-    private String secretKeyFile;
+    private final String secretKeyFile;
 
     private String secretKey;
+
+
+    public JwtTokenProvider() {
+        String osName = System.getProperty("os.name").toLowerCase();
+        if (osName.contains("mac")) {
+            secretKeyFile = "/secret-key/jwt-secret-key.txt";
+        } else  {
+            secretKeyFile = "C:/secret-key/jwt-secret-key.txt";
+        }
+    }
 
     public String createAccessToken(Map<String, Object> claims) {
         log.info("accessTokenValidityInMilliseconds 값:" + accessTokenValidityInMilliseconds);
