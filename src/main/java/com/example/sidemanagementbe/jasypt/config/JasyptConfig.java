@@ -29,8 +29,17 @@ public class JasyptConfig {
     private String stringOutputType;
     @Value("${jasypt.encryptor.key-obtention-iterations}")
     private int keyObtentionIterations;
-    @Value("${jasypt.encryptor.password-file}")
-    private String passwordFile;
+
+    private final String passwordFile;
+
+    public JasyptConfig() {
+        String osName = System.getProperty("os.name").toLowerCase();
+        if (osName.contains("mac")) {
+            passwordFile = "/secret-key/secret-key.txt";
+        } else  {
+            passwordFile = "C:/secret-key/secret-key.txt";
+        }
+    }
 
     @Bean
     public StringEncryptor jasyptStringEncryptor() {

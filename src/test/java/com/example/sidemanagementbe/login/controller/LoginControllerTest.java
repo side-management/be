@@ -107,10 +107,17 @@ class LoginControllerTest {
     }
 
     public String getResponseCode(String requestUrl, String userId, String userPw) {
-        Assertions.assertNotEquals(userId, "", "유효한 카카오톡 ID를 입력해주세요");
-        Assertions.assertNotEquals(userPw, "", "유효한 카카오톡 비밀번호를 입력해주세요");
+        Assertions.assertNotEquals(userId, "nick1324@naver.com", "유효한 카카오톡 ID를 입력해주세요");
+        Assertions.assertNotEquals(userPw, "jayyou!3204", "유효한 카카오톡 비밀번호를 입력해주세요");
 
         // Chrome WebDriver 설정
+        String filePath = "";
+        String osName = System.getProperty("os.name").toLowerCase();
+        if (osName.contains("mac")) {
+            filePath = "/chromedriver/chromedriver";
+        } else if (osName.contains("win")) {
+            filePath = "C:\\chromedriver\\chromedriver.exe";
+        }
         System.setProperty("webdriver.chrome.driver", "C:\\chromedriver\\chromedriver.exe");
         ChromeOptions options = new ChromeOptions();
         options.addArguments("--remote-allow-origins=*");
