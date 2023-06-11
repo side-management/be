@@ -52,9 +52,4 @@ public class LoginController {
         return ResponseEntity.ok(accessTokenResponse);
     }
 
-    @GetMapping("/test")
-    public String test() {
-        return "hello";
-    }
-
 }

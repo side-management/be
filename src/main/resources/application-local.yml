@@ -4,11 +4,7 @@ server:
 spring:
   profiles:
     activate:
-<<<<<<< HEAD
-      on-profile: develop
-=======
       on-profile: local
->>>>>>> 04c0ff62ed1922b02d9e915fb95510374e0b2878
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
@@ -19,19 +15,11 @@ spring:
     console:
       enabled: true
       path: /h2-console
-<<<<<<< HEAD
-
-=======
->>>>>>> 04c0ff62ed1922b02d9e915fb95510374e0b2878
   datasource:
     url: jdbc:h2:~/side-management-h2-db
     username: ENC(ULG/l9xxXuH3EiW1cNdwTg==)
     password:
     driverClassName: org.h2.Driver
-<<<<<<< HEAD
-
-=======
->>>>>>> 04c0ff62ed1922b02d9e915fb95510374e0b2878
   jpa:
     hibernate:
       #애플리케이션 로딩 시점에 다 드랍하고 다시 생성
@@ -81,8 +69,3 @@ jasypt:
 
 logging:
   config: classpath:logback-spring.xml
-
-<<<<<<< HEAD
-
-=======
->>>>>>> 04c0ff62ed1922b02d9e915fb95510374e0b2878
