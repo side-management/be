@@ -1,8 +1,8 @@
-package com.example.sidemanagementbe.login.config;
+package com.example.sidemanagementbe.web.security.config;
 
 
-import com.example.sidemanagementbe.login.security.filter.JwtTokenValidationFilter;
-import com.example.sidemanagementbe.login.security.util.JwtTokenProvider;
+import com.example.sidemanagementbe.web.security.filter.JwtTokenValidationFilter;
+import com.example.sidemanagementbe.web.security.util.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;

@@ -1,4 +1,4 @@
-package com.example.sidemanagementbe.login.security.filter;
+package com.example.sidemanagementbe.web.security.filter;
 
 import java.io.IOException;
 import javax.servlet.FilterChain;

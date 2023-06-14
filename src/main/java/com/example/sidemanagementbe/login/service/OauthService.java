@@ -10,7 +10,7 @@ import com.example.sidemanagementbe.login.entity.Member;
 import com.example.sidemanagementbe.login.entity.MemberRole;
 import com.example.sidemanagementbe.login.repository.MemberRepository;
 import com.example.sidemanagementbe.login.repository.RefreshTokenRepository;
-import com.example.sidemanagementbe.login.security.util.JwtTokenProvider;
+import com.example.sidemanagementbe.web.security.util.JwtTokenProvider;
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.HashMap;
 import java.util.Map;

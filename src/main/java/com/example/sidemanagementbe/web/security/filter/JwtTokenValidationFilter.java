@@ -1,7 +1,7 @@
-package com.example.sidemanagementbe.login.security.filter;
+package com.example.sidemanagementbe.web.security.filter;
 
 import com.example.sidemanagementbe.login.dto.KakaoUserInfo;
-import com.example.sidemanagementbe.login.security.util.JwtTokenProvider;
+import com.example.sidemanagementbe.web.security.util.JwtTokenProvider;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import java.io.IOException;

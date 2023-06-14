@@ -1,4 +1,4 @@
-package com.example.sidemanagementbe.login.security.util;
+package com.example.sidemanagementbe.web.security.util;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -18,7 +18,6 @@ import java.util.Random;
 import javax.annotation.PostConstruct;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Component;
 
@@ -27,22 +26,18 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class JwtTokenProvider {
 
-    private long accessTokenValidityInMilliseconds;
-
-    private long refreshTokenValidityInMilliseconds;
-
-    private Map<String, String> keyValues;
-
     private final String secretKeyFile;
-
+    private long accessTokenValidityInMilliseconds;
+    private long refreshTokenValidityInMilliseconds;
+    private Map<String, String> keyValues;
     private String secretKey;
 
 
     public JwtTokenProvider() {
         String osName = System.getProperty("os.name").toLowerCase();
         if (osName.contains("mac")) {
-            secretKeyFile = "/secret-key/jwt-secret-key.txt";
-        } else  {
+            secretKeyFile = "/Users/jaehong/jwt-secret-key.txt";
+        } else {
             secretKeyFile = "C:/secret-key/jwt-secret-key.txt";
         }
     }

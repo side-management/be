@@ -7,7 +7,7 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppC
 
 import com.example.sidemanagementbe.login.dto.AccessTokenRequest;
 import com.example.sidemanagementbe.login.dto.AccessTokenResponse;
-import com.example.sidemanagementbe.login.security.util.JwtTokenProvider;
+import com.example.sidemanagementbe.web.security.util.JwtTokenProvider;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.Duration;
@@ -84,8 +84,8 @@ class LoginControllerTest {
     }
 
     /**
-     * 카카오톡 로그인 API 테스트를 실행 유효한 아이디(userId)와 비밀번호(userPw)를 입력해주고 실행할 것 각 계정 정보는 다르기에 특정 response 값을 고정적으로 check할 수 없음으로
-     * 반환되는 json key 값을 가지고 있는지만 체크함 chrome driver 파일 필요 (크롬 버전에 맞는 chromedriver.exe 필요)
+     * 카카오톡 로그인 API 테스트를 실행 유효한 아이디(userId)와 비밀번호(userPw)를 입력해주고 실행할 것 각 계정 정보는 다르기에 특정 response 값을 고정적으로 check할 수 없음으로 반환되는 json key 값을 가지고 있는지만 체크함
+     * chrome driver 파일 필요 (크롬 버전에 맞는 chromedriver.exe 필요)
      */
     @Test
     @DisplayName("카카오 소셜 로그인 API 테스트")
