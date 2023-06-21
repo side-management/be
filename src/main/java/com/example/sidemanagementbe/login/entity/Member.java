@@ -1,13 +1,12 @@
 package com.example.sidemanagementbe.login.entity;
 
+import com.example.sidemanagementbe.common.entity.BaseEntity;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -19,12 +18,9 @@ import lombok.ToString;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @ToString(of = {"id", "email"})
-@Table(name = "member")
-public class Member {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "user_id")
-    private Long id;
+@Table(name = "saida_member")
+@PrimaryKeyJoinColumn(name = "member_id")
+public class Member extends BaseEntity {
 
     @Column(nullable = false)
     private String nickName;

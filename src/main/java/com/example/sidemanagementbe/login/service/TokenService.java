@@ -4,7 +4,7 @@ import com.example.sidemanagementbe.login.dto.AccessTokenRequest;
 import com.example.sidemanagementbe.login.dto.AccessTokenResponse;
 import com.example.sidemanagementbe.login.exception.InvalidRefreshTokenException;
 import com.example.sidemanagementbe.login.repository.RefreshTokenRepository;
-import com.example.sidemanagementbe.login.security.util.JwtTokenProvider;
+import com.example.sidemanagementbe.web.security.util.JwtTokenProvider;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -33,6 +33,7 @@ public class TokenService {
         }
 
         //redis 캐시에 기존 accessToken 삭제
+
         if (redisTemplate.hasKey(request.getAccessToken())) {
             redisTemplate.delete(request.getAccessToken());
         }
