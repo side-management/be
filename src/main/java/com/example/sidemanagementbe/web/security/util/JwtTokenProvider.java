@@ -6,11 +6,13 @@ import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.time.Instant;
+import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -18,7 +20,6 @@ import java.util.Random;
 import javax.annotation.PostConstruct;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -62,12 +63,13 @@ public class JwtTokenProvider {
         return Jwts.builder()
                 .setClaims(claims)
                 .setExpiration(new Date(System.currentTimeMillis() + expirationTimeInMillis))
-                .signWith(SignatureAlgorithm.HS256, getSecretKey())
+                .signWith(getSecretKey(), SignatureAlgorithm.HS256)
                 .compact();
+
     }
 
     public Claims decodeJwtPayload(String jwtToken) {
-        Jws<Claims> jws = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(jwtToken);
+        Jws<Claims> jws = Jwts.parserBuilder().setSigningKey(getSecretKey()).build().parseClaimsJws(jwtToken);
         return jws.getBody();
     }
 
@@ -101,40 +103,45 @@ public class JwtTokenProvider {
         }
     }
 
-    public String getSecretKey() {
-        return secretKey;
+    public Key getSecretKey() {
+        byte[] keyBytes = Decoders.BASE64.decode(secretKey);
+        return Keys.hmacShaKeyFor(keyBytes);
     }
 
     public Claims getPayload(String token) {
         try {
             return Jwts.parserBuilder()
-                    .setSigningKey(secretKey)
+                    .setSigningKey(getSecretKey())
                     .build()
                     .parseClaimsJws(token)
                     .getBody();
         } catch (ExpiredJwtException e) {
             return e.getClaims();
         } catch (JwtException e) {
+            log.error("Error Occurred:" + e.getMessage());
             throw new RuntimeException("유효하지 않은 토큰 입니다");
         }
     }
 
-    public boolean validateToken(String token) {
-        String secretKey = getSecretKey();
+    public boolean isTokenValid(String token) {
+        boolean isTokenInvalid = false;
 
         // 토큰의 변조 여부 검사
-        Jws<Claims> claimsJws = Jwts.parserBuilder()
-                .setSigningKey(secretKey)
-                .build()
-                .parseClaimsJws(token);
 
-        // 토큰의 만료 여부 검사
-        Date expirationDate = claimsJws.getBody().getExpiration();
-        if (Instant.now().isAfter(expirationDate.toInstant())) {
-            throw new BadCredentialsException("Access token has expired");
+        try {
+            Jwts.parserBuilder()
+                    .setSigningKey(getSecretKey())
+                    .build()
+                    .parseClaimsJws(token);
+        } catch (JwtException e) {
+            // 토큰 변조로 인한 예외 처리
+            log.error("Error Occurred: " + e.getMessage());
+            isTokenInvalid = true;
         }
 
-        return true;
+        // 토큰 만료 검증
+
+        return !isTokenInvalid;
     }
 
 }

@@ -1,6 +1,7 @@
 package com.example.sidemanagementbe.web.security.filter;
 
 import com.example.sidemanagementbe.login.dto.KakaoUserInfo;
+import com.example.sidemanagementbe.web.security.exception.JwtExpiredTokenException;
 import com.example.sidemanagementbe.web.security.util.JwtTokenProvider;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
@@ -46,9 +47,8 @@ public class JwtTokenValidationFilter extends OncePerRequestFilter {
         if (shouldSkipValidation(request)) {
             try {
                 filterChain.doFilter(request, response);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            } catch (ServletException e) {
+            } catch (IOException | ServletException e) {
+                log.error("Error Occurred:" + e.getMessage());
                 throw new RuntimeException(e);
             }
             return;
@@ -56,12 +56,15 @@ public class JwtTokenValidationFilter extends OncePerRequestFilter {
 
         log.info("-------------------JwtTokenValidationFilter CALL-------------------");
         log.info("-------------------request URI: " + request.getRequestURI() + "---------------");
-
         String token = extractToken(request);
+        log.info("token:" + token);
         Long memberId = Long.parseLong(jwtTokenProvider.getMemberId(token));
 
         try {
-            if (token != null && jwtTokenProvider.validateToken(token)) {
+            if (!jwtTokenProvider.isTokenValid(token)) {
+                throw new JwtExpiredTokenException("Access token has expired");
+            }
+            if (token != null) {
                 // 권한 부여
                 UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
                         memberId, null, List.of(new SimpleGrantedAuthority("USER")));
@@ -93,9 +96,10 @@ public class JwtTokenValidationFilter extends OncePerRequestFilter {
         RequestMatcher requestMatcher = new AntPathRequestMatcher("/access-token", "POST");
         String path = request.getRequestURI();
 
-        return requestMatcher.matches(request) || path.startsWith("/login")
+        return path.startsWith("/login")
                 || path.startsWith("/swagger") || path.startsWith("/v2") || path.startsWith("/v3") || path.startsWith(
-                "/favicon.ico") || path.startsWith("/h2-console");
+                "/favicon.ico") || path.startsWith("/h2-console") || path.startsWith("/socket.io") || path.startsWith(
+                "/ws");
     }
 
     private String extractToken(HttpServletRequest request) {
