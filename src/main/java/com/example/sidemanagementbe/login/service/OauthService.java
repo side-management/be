@@ -65,7 +65,7 @@ public class OauthService {
         return LoginResponse.builder()
                 .id(member.getId())
                 .imageUrl(member.getImageUrl())
-                .nickName(member.getNickName())
+                .nickname(member.getNickname())
                 .email(member.getEmail())
                 .role(MemberRole.USER)
                 .tokenType(BEARER_TYPE)
@@ -116,7 +116,7 @@ public class OauthService {
 
         String provide = oauth2UserInfo.getProvider();
         String providerId = oauth2UserInfo.getProviderId();
-        String nickName = oauth2UserInfo.getNickName();
+        String nickName = oauth2UserInfo.getNickname();
         String email = oauth2UserInfo.getEmail();
         Gender gender = oauth2UserInfo.getGender();
         String imageUrl = oauth2UserInfo.getImageUrl();
