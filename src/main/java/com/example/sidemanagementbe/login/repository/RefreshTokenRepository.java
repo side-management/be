@@ -5,18 +5,17 @@ import com.example.sidemanagementbe.login.dto.RefreshTokenDto;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Repository;
 
+@RequiredArgsConstructor
 @Repository
 public class RefreshTokenRepository {
 
-    private final RedisTemplate redisTemplate;
+    private final RedisTemplate<String, Long> redisTemplate;
 
-    public RefreshTokenRepository(final RedisTemplate redisTemplate) {
-        this.redisTemplate = redisTemplate;
-    }
 
     public void save(final RefreshTokenDto refreshToken) {
         try {
