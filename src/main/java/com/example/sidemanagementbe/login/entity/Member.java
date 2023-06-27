@@ -9,21 +9,22 @@ import javax.persistence.Enumerated;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
+@Builder
 @Entity
 @Getter
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@ToString(of = {"id", "email"})
 @Table(name = "saida_member")
 @PrimaryKeyJoinColumn(name = "member_id")
 public class Member extends BaseEntity {
 
     @Column(nullable = false)
-    private String nickName;
+    private String nickname;
 
     @Embedded
     private Address address;
@@ -48,27 +49,12 @@ public class Member extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private MemberRole role;
 
-    @Builder
-    public Member(Long id, String nickName, Address address, String phoneNumber, Gender gender, String birthYear,
-                  String provider, String providerId, String imageUrl, String email, MemberRole role) {
-        this.id = id;
-        this.nickName = nickName;
-        this.address = address;
-        this.phoneNumber = phoneNumber;
-        this.gender = gender;
-        this.birthYear = birthYear;
-        this.provider = provider;
-        this.providerId = providerId;
-        this.imageUrl = imageUrl;
-        this.email = email;
-        this.role = role;
-    }
 
-    public static Member createMember(String email, String nickName, Gender gender, String provider, String providerId,
+    public static Member createMember(String email, String nickname, Gender gender, String provider, String providerId,
                                       String imageUrl, MemberRole role) {
         return Member.builder()
                 .email(email)
-                .nickName(nickName)
+                .nickname(nickname)
                 .gender(gender)
                 .provider(provider)
                 .providerId(providerId)
