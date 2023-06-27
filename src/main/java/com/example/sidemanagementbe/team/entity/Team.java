@@ -3,6 +3,7 @@ package com.example.sidemanagementbe.team.entity;
 
 import com.example.sidemanagementbe.common.entity.BaseEntity;
 import com.example.sidemanagementbe.teammember.entity.TeamMember;
+import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
@@ -13,9 +14,12 @@ import javax.persistence.Table;
 @Table(name = "saida_team")
 @PrimaryKeyJoinColumn(name = "team_id")
 public class Team extends BaseEntity {
-
-
     @OneToMany(mappedBy = "team")
-    private List<TeamMember> members;
+    private List<TeamMember> members = new ArrayList<>();
+
+    public void addMembers(List<TeamMember> members) {
+        this.members.addAll(members);
+    }
+
 
 }
