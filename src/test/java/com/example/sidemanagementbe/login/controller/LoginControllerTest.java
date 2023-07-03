@@ -40,6 +40,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 @AutoConfigureMockMvc
 @SpringBootTest
+public
 class LoginControllerTest {
 
     //kakao client id 암호화를 위함
@@ -97,9 +98,9 @@ class LoginControllerTest {
 
         //when
         //userId 입력하기
-        String userId = "";
+        String userId = "ccik2626@naver.com";
         //userPw 입력하기
-        String userPw = "";
+        String userPw = "hjl61510@";
         String code = getResponseCode(requestUrl, userId, userPw);
 
         //then
