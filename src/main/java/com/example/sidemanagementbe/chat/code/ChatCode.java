@@ -1,6 +1,9 @@
 package com.example.sidemanagementbe.chat.code;
 
-public enum ChatCode implements ResponseCode {
+import lombok.Getter;
+
+@Getter
+public enum ChatCode  {
     SYSTEM_USER_OUT("System", "C-1502", "유저 1명이 나갔습니다."),
     SYSTEM_USER_ENTER("System", "C-1501", "유저 1명이 참여했습니다."),
     SYSTEM_USER_KICKED_OUT("System", "C-1503", "유저 1명이 강퇴당했습니다."),
@@ -25,12 +28,11 @@ public enum ChatCode implements ResponseCode {
         return this.type;
     }
 
-    @Override
+
     public String getCode() {
         return this.code;
     }
 
-    @Override
     public String getMessage() {
         return this.message;
     }
