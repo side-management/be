@@ -67,7 +67,6 @@ public class StompExceptionHandler extends StompSubProtocolErrorHandler {
             log.error("[MessageDeliveryException] - {}: {}", errorMessage, exception.getMessage(), exception);
             return handleException(clientMessage, exception, ErrorCode.MESSAGE_DELIVERY_ERROR);
         }
-        System.out.println("exception:" + exception.getMessage());
 
         return super.handleClientMessageProcessingError(clientMessage, ex);
 
