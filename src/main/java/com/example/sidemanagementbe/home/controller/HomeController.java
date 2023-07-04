@@ -12,8 +12,12 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
+import springfox.documentation.annotations.ApiIgnore;
 
 import javax.annotation.security.PermitAll;
 import java.util.List;
@@ -28,7 +32,7 @@ public class HomeController {
     private final HomeService homeService;
     //채용중인 프로젝트 리스트
     //{리더,}
-    @PermitAll
+    @PreAuthorize("hasRole('USER')")
     @GetMapping("/home")
     @Operation(summary = "로그인 성공시 홈화면", description = "프로젝트 리스트와 포르폴리오 리스트를 반환")     //프로젝트 상태값이 필요할거 같아유 ex) 구인중,완료된 프로젝트,진행중인 프로젝트 등
     @ApiResponses(value = {
