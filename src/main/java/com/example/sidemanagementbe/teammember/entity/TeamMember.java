@@ -9,8 +9,10 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
+import lombok.Builder;
 
 @Entity
+@Builder
 @Table(name = "saida_team_member")
 @PrimaryKeyJoinColumn(name = "team_member_id")
 public class TeamMember extends BaseEntity {

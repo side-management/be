@@ -12,7 +12,7 @@ public class LoginResponse {
     @Schema(description = "사용자 ID", nullable = false, example = "2817797040")
     private Long id;
     @Schema(description = "사용자 닉네임", nullable = false, example = "홍길동")
-    private String nickName;
+    private String nickname;
     @Schema(description = "사용자 email", nullable = false, example = "example@naver.com")
     private String email;
     @Schema(description = "사용자 카카오 프로필 사진 cdn 링크", nullable = false, example = "CDN 주소")
@@ -27,10 +27,10 @@ public class LoginResponse {
     private String refreshToken;
 
     @Builder
-    public LoginResponse(Long id, String nickName, String email, String imageUrl, MemberRole role, String tokenType,
+    public LoginResponse(Long id, String nickname, String email, String imageUrl, MemberRole role, String tokenType,
                          String accessToken, String refreshToken) {
         this.id = id;
-        this.nickName = nickName;
+        this.nickname = nickname;
         this.email = email;
         this.imageUrl = imageUrl;
         this.role = role;
