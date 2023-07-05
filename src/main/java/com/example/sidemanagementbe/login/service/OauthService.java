@@ -1,6 +1,10 @@
 package com.example.sidemanagementbe.login.service;
 
-import com.example.sidemanagementbe.login.dto.*;
+import com.example.sidemanagementbe.login.dto.KakaoUserInfo;
+import com.example.sidemanagementbe.login.dto.LoginResponse;
+import com.example.sidemanagementbe.login.dto.OAuth2UserInfo;
+import com.example.sidemanagementbe.login.dto.OauthTokenResponse;
+import com.example.sidemanagementbe.login.dto.RefreshTokenDto;
 import com.example.sidemanagementbe.login.entity.Gender;
 import com.example.sidemanagementbe.login.entity.Member;
 import com.example.sidemanagementbe.login.entity.MemberRole;
@@ -8,6 +12,10 @@ import com.example.sidemanagementbe.login.repository.MemberRepository;
 import com.example.sidemanagementbe.login.repository.RefreshTokenRepository;
 import com.example.sidemanagementbe.web.security.util.JwtTokenProvider;
 import com.fasterxml.jackson.databind.JsonNode;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
@@ -17,11 +25,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.client.WebClient;
-
-import javax.transaction.Transactional;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor

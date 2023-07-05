@@ -1,15 +1,14 @@
 package com.example.sidemanagementbe.web.security.filter;
 
-import org.springframework.core.Ordered;
-import org.springframework.core.annotation.Order;
-import org.springframework.stereotype.Component;
-import org.springframework.web.filter.OncePerRequestFilter;
-
+import java.io.IOException;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
+import org.springframework.stereotype.Component;
+import org.springframework.web.filter.OncePerRequestFilter;
 
 @Component
 //필터 중에서 가장 먼저 동작하도록 함
@@ -34,7 +33,7 @@ public class CORSFilter extends OncePerRequestFilter {
          * 마지막으로, OPTIONS 메서드인 경우 응답의 상태 코드를 200으로 설정하여 Preflight 요청에 대한 처리를 완료합니다.
          * 그 외의 경우에는 실제 요청을 처리하기 위해 FilterChain으로 제어를 넘깁니다.
          */
-        if ("OPTIONS" .equalsIgnoreCase(request.getMethod())) {
+        if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
             response.setStatus(HttpServletResponse.SC_OK);
         } else {
             filterChain.doFilter(request, response);

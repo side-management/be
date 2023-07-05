@@ -7,13 +7,12 @@ import com.example.sidemanagementbe.home.repository.ProjectRepository;
 import com.example.sidemanagementbe.home.repository.ResumeRepository;
 import com.example.sidemanagementbe.project.entity.Project;
 import com.example.sidemanagementbe.resume.entity.Resume;
+import java.util.List;
+import java.util.stream.Collectors;
+import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-
-import javax.transaction.Transactional;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
