@@ -25,6 +25,8 @@ public class ChatService {
                 .content(chatDto.getContent())
                 .messageType(chatDto.getMessageType())
                 .senderNickname(chatDto.getSenderNickname())
+                .createdAt(chatDto.getCreatedAt())
+                .updatedAt(chatDto.getUpdatedAt())
                 .build();
 
         chatRepository.save(chatEntity);
