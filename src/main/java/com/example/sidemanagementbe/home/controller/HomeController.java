@@ -12,14 +12,10 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
-import springfox.documentation.annotations.ApiIgnore;
 
-import javax.annotation.security.PermitAll;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -30,16 +26,18 @@ public class HomeController {
 
 
     private final HomeService homeService;
+
     //채용중인 프로젝트 리스트
     //{리더,}
     @PreAuthorize("hasRole('USER')")
     @GetMapping("/home")
-    @Operation(summary = "로그인 성공시 홈화면", description = "프로젝트 리스트와 포르폴리오 리스트를 반환")     //프로젝트 상태값이 필요할거 같아유 ex) 구인중,완료된 프로젝트,진행중인 프로젝트 등
+    @Operation(summary = "로그인 성공시 홈화면", description = "프로젝트 리스트와 포르폴리오 리스트를 반환")
+    //프로젝트 상태값이 필요할거 같아유 ex) 구인중,완료된 프로젝트,진행중인 프로젝트 등
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "로드 성공"),
             @ApiResponse(responseCode = "400", description = "로드 실패")
     })
-    public ResponseEntity<HomeResponse> load(){
+    public ResponseEntity<HomeResponse> load() {
         return ResponseEntity.ok(homeService.loadHome());
     }
 
@@ -56,7 +54,6 @@ public class HomeController {
     } */
 
 
-
     //포트폴리오 클릭시
     @GetMapping("/home/resume_detail/{resume_id}")
     @Operation(summary = "이력서 상세", description = "이력서 정보를 반환")
@@ -70,13 +67,14 @@ public class HomeController {
 
 
     //프로젝트 변환기
-    public List<ProjectDto> convertToProjectDto(List<Project> projects){
+    public List<ProjectDto> convertToProjectDto(List<Project> projects) {
         return projects.stream()
                 .map(project -> ProjectDto.builder().id(project.getId()).build())
                 .collect(Collectors.toList());
     }
+
     //이력서 변환기
-    public List<ResumeDto> convertToResumeDto(List<Resume> resumes){
+    public List<ResumeDto> convertToResumeDto(List<Resume> resumes) {
         return resumes.stream()
                 .map(resume -> ResumeDto.builder().id(resume.getId()).build())
                 .collect(Collectors.toList());

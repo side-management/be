@@ -8,7 +8,8 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface ResumeRepository extends JpaRepository<Resume,Long> {
+public interface ResumeRepository extends JpaRepository<Resume, Long> {
     List<Resume> findAll();
+
     Optional<Resume> findById(Long id);
 }

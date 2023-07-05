@@ -1,7 +1,5 @@
 package com.example.sidemanagementbe.web.security.config;
 
-import java.util.ArrayList;
-import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.security.oauth2.client.ClientsConfiguredCondition;
@@ -14,6 +12,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.oauth2.client.registration.InMemoryClientRegistrationRepository;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * OAuth2 클라이언트의 등록 정보를 관리하기 위한 설정 클래스 Spring Security의 OAuth2 클라이언트를 사용하여 외부 인증 서비스(예: Google, Facebook, Kakao 등)와 연동할 때 사용됨

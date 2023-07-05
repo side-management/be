@@ -27,27 +27,26 @@ public class HomeService {
     //프로젝트 상태코드
     //프로젝트 모집기간
     @Transactional
-    public HomeResponse loadHome(){
+    public HomeResponse loadHome() {
         List<Project> projects = projectRepository.findAll();
         List<Resume> resumes = resumeRepository.findAll();
 
         List<ProjectDto> projectDtos = convertToProjectDto(projects);
         List<ResumeDto> resumeDtos = convertToResumeDto(resumes);
 
-        HomeResponse homeResponse = new HomeResponse(projectDtos,resumeDtos);
+        HomeResponse homeResponse = new HomeResponse(projectDtos, resumeDtos);
 
         return homeResponse;
     }
 
 
-
-    public List<ProjectDto> convertToProjectDto(List<Project> projects){
+    public List<ProjectDto> convertToProjectDto(List<Project> projects) {
         return projects.stream()
                 .map(project -> ProjectDto.builder().id(project.getId()).build())
                 .collect(Collectors.toList());
     }
 
-    public List<ResumeDto> convertToResumeDto(List<Resume> resumes){
+    public List<ResumeDto> convertToResumeDto(List<Resume> resumes) {
         return resumes.stream()
                 .map(resume -> ResumeDto.builder().id(resume.getId()).build())
                 .collect(Collectors.toList());

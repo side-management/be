@@ -1,7 +1,8 @@
 package com.example.sidemanagementbe.resume.entity.value;
 
-import java.util.List;
 import lombok.Getter;
+
+import java.util.List;
 
 
 @Getter

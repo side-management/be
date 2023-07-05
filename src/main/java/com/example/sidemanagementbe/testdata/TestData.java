@@ -11,16 +11,15 @@ import com.example.sidemanagementbe.team.entity.Team;
 import com.example.sidemanagementbe.team.repository.TeamRepository;
 import com.example.sidemanagementbe.teammember.entity.TeamMember;
 import com.example.sidemanagementbe.teammember.repository.TeamMemberRepository;
-
-import java.time.LocalDateTime;
-import java.util.*;
-import java.util.stream.IntStream;
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
+
+import java.time.LocalDateTime;
+import java.util.*;
+import java.util.stream.IntStream;
 
 @RequiredArgsConstructor
 @Component
@@ -31,7 +30,6 @@ public class TestData {
     private final TeamRepository teamRepository;
 
     private final TeamMemberRepository teamMemberRepository;
-
 
 
     @Bean
@@ -100,25 +98,24 @@ public class TestData {
                 teamMemberRepository.save(teamMember5);
 
 
-
                 List<Chat> chatList = new ArrayList<>();
-                IntStream.rangeClosed(1,100).forEach(i -> {
+                IntStream.rangeClosed(1, 100).forEach(i -> {
                     Chat chat = null;
-                    if(i <=50){
+                    if (i <= 50) {
                         chat = Chat.builder()
-                                .content("archive content "+i)
+                                .content("archive content " + i)
                                 .teamId(Long.valueOf(i))
                                 .memberId(Long.valueOf(i))
                                 .messageType(SystemMessageType.SEND)
-                                .createdAt(LocalDateTime.now().minusDays(7+i))
-                                .updatedAt(LocalDateTime.now().minusDays(7+i))
+                                .createdAt(LocalDateTime.now().minusDays(7 + i))
+                                .updatedAt(LocalDateTime.now().minusDays(7 + i))
                                 .build();
-                    }else{
+                    } else {
                         Random random = new Random();
                         int randomNumber = random.nextInt(6) + 1;
 
                         chat = Chat.builder()
-                                .content("archive content "+i)
+                                .content("archive content " + i)
                                 .teamId(Long.valueOf(i))
                                 .memberId(Long.valueOf(i))
                                 .messageType(SystemMessageType.SEND)

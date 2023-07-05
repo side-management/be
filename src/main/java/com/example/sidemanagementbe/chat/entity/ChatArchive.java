@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+
 @Qualifier("secondary")
 @Builder
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
