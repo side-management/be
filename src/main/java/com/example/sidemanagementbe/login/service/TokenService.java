@@ -1,17 +1,19 @@
 package com.example.sidemanagementbe.login.service;
 
+import com.example.sidemanagementbe.chat.exception.InvalidRefreshTokenException;
 import com.example.sidemanagementbe.login.dto.AccessTokenRequest;
 import com.example.sidemanagementbe.login.dto.AccessTokenResponse;
-import com.example.sidemanagementbe.login.exception.InvalidRefreshTokenException;
 import com.example.sidemanagementbe.login.repository.RefreshTokenRepository;
+import com.example.sidemanagementbe.web.security.exception.JwtExpiredTokenException;
 import com.example.sidemanagementbe.web.security.util.JwtTokenProvider;
-import java.util.Map;
-import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -28,8 +30,8 @@ public class TokenService {
         refreshTokenRepository.findById(request.getRefreshToken())
                 .orElseThrow(InvalidRefreshTokenException::new);
 
-        if (!jwtTokenProvider.validateToken(request.getRefreshToken())) {
-            throw new InvalidRefreshTokenException();
+        if (!jwtTokenProvider.isTokenValid(request.getRefreshToken())) {
+            throw new JwtExpiredTokenException("Access token has expired");
         }
 
         //redis 캐시에 기존 accessToken 삭제

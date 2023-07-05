@@ -1,4 +1,4 @@
-package com.example.sidemanagementbe.login.exception;
+package com.example.sidemanagementbe.chat.exception;
 
 public class InvalidRefreshTokenException extends RuntimeException {
     public InvalidRefreshTokenException() {

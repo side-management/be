@@ -22,7 +22,6 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationEn
 public class SecurityConfig {
     private final JwtTokenProvider jwtTokenProvider;
 
-
     @Bean
     PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();

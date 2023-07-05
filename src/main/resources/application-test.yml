@@ -9,7 +9,7 @@ spring:
 
   datasource:
     url: jdbc:h2:~/side-management-h2-db
-    username: ENC(ULG/l9xxXuH3EiW1cNdwTg==)
+    username: ENC(H9WnDSBeO8gZJLhHEDhuig==)
     password:
     driverClassName: org.h2.Driver
 
