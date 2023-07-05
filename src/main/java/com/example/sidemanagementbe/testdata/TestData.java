@@ -11,15 +11,18 @@ import com.example.sidemanagementbe.team.entity.Team;
 import com.example.sidemanagementbe.team.repository.TeamRepository;
 import com.example.sidemanagementbe.teammember.entity.TeamMember;
 import com.example.sidemanagementbe.teammember.repository.TeamMemberRepository;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Random;
+import java.util.stream.IntStream;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
-
-import java.time.LocalDateTime;
-import java.util.*;
-import java.util.stream.IntStream;
 
 @RequiredArgsConstructor
 @Component
@@ -96,7 +99,6 @@ public class TestData {
                 teamMemberRepository.save(teamMember3);
                 teamMemberRepository.save(teamMember4);
                 teamMemberRepository.save(teamMember5);
-
 
                 List<Chat> chatList = new ArrayList<>();
                 IntStream.rangeClosed(1, 100).forEach(i -> {
