@@ -87,7 +87,7 @@ public class HomeControllerTest {
                 .projects(projectDtos)
                 .resumes(resumeDtos)
                 .build();
-        System.out.println("=============== 테스트 시작 ===============");
+
         assertEquals(2, homeResponse.getProjects().size());
         assertEquals(2, homeResponse.getResumes().size());
     }
