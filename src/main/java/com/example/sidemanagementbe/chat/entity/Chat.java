@@ -2,16 +2,10 @@ package com.example.sidemanagementbe.chat.entity;
 
 
 import com.example.sidemanagementbe.chat.dto.SystemMessageType;
-import com.example.sidemanagementbe.common.entity.BaseEntity;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.PrimaryKeyJoinColumn;
-import javax.persistence.Table;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
+
+import javax.persistence.*;
+import java.time.LocalDateTime;
 
 
 @Builder
@@ -19,9 +13,16 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Entity
-@PrimaryKeyJoinColumn(name = "team_id")
 @Table(name = "saida_chat")
-public class Chat extends BaseEntity {
+public class Chat {
+
+    //teamId와 같음, 즉 roomId를 의미
+    @Id
+    @GeneratedValue
+    Long id;
+
+    @Column(nullable = false)
+    private Long teamId;
 
     @Column(nullable = false)
     private Long memberId;
@@ -31,6 +32,10 @@ public class Chat extends BaseEntity {
     private String content;
 
     private SystemMessageType messageType;
+
+    private LocalDateTime createdAt;
+
+    private LocalDateTime updatedAt;
 
 
 }
