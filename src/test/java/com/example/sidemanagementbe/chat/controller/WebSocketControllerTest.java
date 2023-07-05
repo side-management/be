@@ -1,7 +1,10 @@
 package com.example.sidemanagementbe.chat.controller;
 
+import org.junit.Assert;
+import org.junit.Before;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -13,6 +16,7 @@ import org.springframework.messaging.simp.stomp.StompHeaders;
 import org.springframework.messaging.simp.stomp.StompSession;
 import org.springframework.messaging.simp.stomp.StompSessionHandlerAdapter;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.RequestBuilder;
@@ -23,52 +27,62 @@ import org.springframework.util.concurrent.SettableListenableFuture;
 import org.springframework.web.socket.WebSocketHttpHeaders;
 import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 import org.springframework.web.socket.messaging.WebSocketStompClient;
+import org.springframework.web.socket.sockjs.client.SockJsClient;
+import org.springframework.web.socket.sockjs.client.WebSocketTransport;
 
 import java.lang.reflect.Type;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.TimeUnit;
 
+import static java.util.Arrays.asList;
+import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
 
-@ExtendWith(SpringExtension.class)
+@RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@AutoConfigureMockMvc
 class WebSocketControllerTest {
 
 
-    @Test
-    public void testWebSocketConnection() throws Exception {
-        WebSocketStompClient stompClient = new WebSocketStompClient(new StandardWebSocketClient());
-        stompClient.setMessageConverter(new MappingJackson2MessageConverter());
+    static final String WEBSOCKET_URI = "ws://localhost:8080/ws/websocket";
+    static final String WEBSOCKET_TOPIC = "/pub/chat/6";
 
-        SettableListenableFuture<StompSession> sessionFuture = new SettableListenableFuture<>();
-        StompSessionHandlerAdapter sessionHandler = new TestSessionHandler(sessionFuture);
+    BlockingQueue<String> blockingQueue;
+    WebSocketStompClient stompClient;
 
-        String url = "ws://localhost:8080/ws/websocket";  // WebSocket 엔드포인트 URL을 여기에 입력하세요.
-        // JWT 토큰을 생성하여 헤더에 추가합니다.
-        String jwtToken = "eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiVVNFUiIsImlkIjoiMTE0IiwicmFuZG9tIFVVSUQiOiIyNjBlMGIxMi1iMzIzLTRlYWYtOTNhMS1jYzA1YzM0NDI2MmMiLCJleHAiOjE2ODgzNzExNzd9.iCxc-n15FUDApAK2XEsb8n3G8ZincE6tuy4nc2yLaB4";
-
-        WebSocketHttpHeaders headers = new WebSocketHttpHeaders();
-        headers.add(HttpHeaders.AUTHORIZATION, "Bearer " + jwtToken);
-
-        ListenableFuture<StompSession> connectFuture = stompClient.connect(url, headers, sessionHandler);
-        StompSession stompSession = sessionFuture.get(10, TimeUnit.SECONDS);
-
-        assertThat(stompSession).isNotNull();
-        assertThat(connectFuture.isDone()).isTrue();
+    @Before
+    public void setup() {
+        blockingQueue = new LinkedBlockingDeque<>();
+        stompClient = new WebSocketStompClient(new SockJsClient(
+                asList(new WebSocketTransport(new StandardWebSocketClient()))));
     }
 
-    private class TestSessionHandler extends StompSessionHandlerAdapter {
+    @Test
+    public void shouldReceiveAMessageFromTheServer() throws Exception {
+        StompSession session = stompClient
+                .connect(WEBSOCKET_URI, new StompSessionHandlerAdapter() {})
+                .get(1, SECONDS);
 
-        private final SettableListenableFuture<StompSession> sessionFuture;
+        System.out.println("여기 옴");
+        System.out.println("session:"+session.getSessionId());
+        session.subscribe(WEBSOCKET_TOPIC, new DefaultStompFrameHandler());
 
-        public TestSessionHandler(SettableListenableFuture<StompSession> sessionFuture) {
-            this.sessionFuture = sessionFuture;
+        String message = "MESSAGE TEST";
+        session.send(WEBSOCKET_TOPIC, message.getBytes());
+
+        Assert.assertEquals(message, blockingQueue.poll(1, SECONDS));
+    }
+
+    class DefaultStompFrameHandler implements StompFrameHandler {
+        @Override
+        public Type getPayloadType(StompHeaders stompHeaders) {
+            return byte[].class;
         }
 
         @Override
-        public void afterConnected(StompSession session, StompHeaders connectedHeaders) {
-            sessionFuture.set(session);
+        public void handleFrame(StompHeaders stompHeaders, Object o) {
+            blockingQueue.offer(new String((byte[]) o));
         }
     }
 }
