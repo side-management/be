@@ -25,4 +25,11 @@ public enum ChatCode {
     }
 
 
+    public String getCode() {
+        return this.code;
+    }
+
+    public String getMessage() {
+        return this.message;
+    }
 }
