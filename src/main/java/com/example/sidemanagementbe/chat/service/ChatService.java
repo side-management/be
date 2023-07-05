@@ -9,8 +9,6 @@ import com.example.sidemanagementbe.teammember.repository.TeamMemberRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
-
 @AllArgsConstructor
 @Service
 public class ChatService {
@@ -28,8 +26,8 @@ public class ChatService {
                 .content(chatDto.getContent())
                 .messageType(chatDto.getMessageType())
                 .senderNickname(chatDto.getSenderNickname())
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
+                .createdAt(chatDto.getCreatedAt())
+                .updatedAt(chatDto.getUpdatedAt())
                 .build();
 
         Chat saveChat = chatRepository.save(chatEntity);

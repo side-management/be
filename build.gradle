@@ -89,6 +89,11 @@ dependencies {
 
     //messaging security
     implementation 'org.springframework.security:spring-security-messaging'
+
+    //websocket test
+    testImplementation 'org.springframework:spring-websocket-test'
+
+
 }
 
 tasks.named('test') {

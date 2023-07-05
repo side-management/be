@@ -1,23 +1,29 @@
 package com.example.sidemanagementbe.chat.entity;
 
-
 import com.example.sidemanagementbe.chat.dto.SystemMessageType;
-import lombok.*;
-import org.springframework.beans.factory.annotation.Qualifier;
-
-import javax.persistence.*;
 import java.time.LocalDateTime;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
-@Qualifier("secondary")
 @Builder
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Entity
-@Table(name = "archive_saida_chat")
+@Table(name = "saida_archive_chat")
 public class ChatArchive {
 
-    //teamId와 같음, 즉 roomId를 의미
+    //team_id와 같음
     @Id
     @GeneratedValue
     Long id;
@@ -29,10 +35,10 @@ public class ChatArchive {
 
     private String content;
 
+    @Enumerated(EnumType.STRING)
     private SystemMessageType messageType;
 
     private LocalDateTime createdAt;
-
     private LocalDateTime updatedAt;
 
 }
