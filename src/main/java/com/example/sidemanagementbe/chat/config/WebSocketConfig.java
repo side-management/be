@@ -43,20 +43,5 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         registration.interceptors(stompHandler);
     }
 
-//    @Override
-//    public void configureClientInboundChannel(ChannelRegistration registration) {
-//        log.info("------------configureClientInboundChannel-------");
-//        registration.interceptors(webSocketInterceptor);
-//    }
-    //    @Override
-//    public void registerStompEndpoints(StompEndpointRegistry registry) {
-//        registry.addEndpoint("/chat") // 기본 엔드포인트 설정
-//                .setAllowedOrigins("*") // CORS 허용을 위한 설정
-//                .withSockJS(); // SockJS 지원을 위한 설정 (옵션)
-//
-//        // 동적 엔드포인트 추가
-//        registry.addEndpoint("/chat/{teamId}") // {roomId}은 동적인 대화방 식별자입니다.
-//                .setAllowedOrigins("*") // CORS 허용을 위한 설정
-//                .withSockJS(); // SockJS 지원을 위한 설정 (옵션)
-//    }
+
 }
