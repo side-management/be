@@ -17,7 +17,9 @@ public class RegisterMemberService {
     @Transactional
     public Long execute(String socialId, SignUpRequest signUpRequest) {
         memberRepository.findByProviderId(socialId)
-                .orElseThrow(() -> new IllegalArgumentException("이미 존재하는 사용자입니다."));
+                .ifPresent((member) -> {
+                    throw new IllegalArgumentException("이미 존재하는 사용자입니다.");
+                });
 
         var member = Member.builder()
                 .email(signUpRequest.getEmail())
