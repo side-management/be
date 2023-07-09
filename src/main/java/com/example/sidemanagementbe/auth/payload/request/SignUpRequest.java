@@ -15,4 +15,7 @@ import lombok.NoArgsConstructor;
 public class SignUpRequest {
     @NotNull
     private String accessToken;
+
+    @NotNull
+    private String email;
 }
