@@ -11,7 +11,7 @@ public class ExternalAuthenticationFacade {
     private final KakaoApiClient kakaoApiClient;
 
     public String execute(String accessToken) {
-        var response = kakaoApiClient.getUserProfile(accessToken);
+        var response = kakaoApiClient.getUserProfile("Bearer " + accessToken);
         return response.getId();
     }
 }
