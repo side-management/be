@@ -27,9 +27,9 @@ import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
 
 
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
-public class JwtTokenProviderTest {
+public class JwtProviderTest {
 
-    private JwtTokenProvider tokenProvider;
+    private JwtProvider tokenProvider;
 
     @BeforeEach
     void setup() throws JOSEException {
@@ -131,7 +131,7 @@ class FakeTokenProviderGenerator {
         return rsaKey.toRSAPrivateKey();
     }
 
-    public static JwtTokenProvider createTokenProvider() throws JOSEException {
+    public static JwtProvider createTokenProvider() throws JOSEException {
 
         var key = createRSAPublicKey();
         var priv = createRSAPrivateKey();
@@ -142,6 +142,6 @@ class FakeTokenProviderGenerator {
         var jwtEncoder = new NimbusJwtEncoder(jwks);
         var jwtDecoder = NimbusJwtDecoder.withPublicKey(key).build();
 
-        return new JwtTokenProvider(jwtEncoder, jwtDecoder);
+        return new JwtProvider(jwtEncoder, jwtDecoder);
     }
 }
