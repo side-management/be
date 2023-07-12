@@ -3,6 +3,8 @@ package com.example.sidemanagementbe.auth.service.impl;
 
 import com.example.sidemanagementbe.auth.entity.AuthenticationToken;
 import com.example.sidemanagementbe.auth.infrastructure.redis.RedisAuthenticationTokenRepository;
+import com.example.sidemanagementbe.login.dto.AccessTokenRequest;
+import com.example.sidemanagementbe.login.dto.AccessTokenResponse;
 import com.example.sidemanagementbe.web.jwt.util.JwtProvider;
 import java.time.Instant;
 import lombok.Builder;
@@ -32,6 +34,25 @@ public class IssuanceTokenService {
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .build();
+    }
+
+    public AccessTokenResponse regenerateAccessToken(AccessTokenRequest request) {
+        var id = tokenProvider.extractToValueFrom(request.getAccessToken());
+        var authenticationToken = authenticationTokenRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자 입니다."));
+
+        authenticationTokenRepository.delete(authenticationToken);
+        var now = Instant.now();
+
+        var accessToken = tokenProvider.createAccessToken(id, now);
+        var refreshToken = tokenProvider.createRefreshToken(id, now);
+
+        authenticationTokenRepository.save(AuthenticationToken.builder()
+                .refreshToken(refreshToken)
+                .memberId(id)
+                .build()
+        );
+        return new AccessTokenResponse(accessToken);
     }
 }
 
