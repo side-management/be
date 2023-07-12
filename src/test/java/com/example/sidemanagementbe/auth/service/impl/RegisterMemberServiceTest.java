@@ -18,9 +18,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 class RegisterMemberServiceTest {
     @Autowired
     private MemberRepository memberRepository;
-
     private RegisterMemberService registerMemberService;
-
     private Member member1;
 
     @BeforeEach
@@ -33,11 +31,12 @@ class RegisterMemberServiceTest {
     }
 
     @Test
-    void 이미_외부인증을_통해서_등록된_사용자는_오류가_발생한다() {
+    void 닉네임_혹은_이메일이_이미_등록된_사용자의_경우_에러가_발생합니다() {
         assertThatThrownBy(() -> {
             memberRepository.save(member1);
             this.registerMemberService.execute("id", SignUpRequest.builder()
                     .email("email")
+                    .nickname("nickname")
                     .build());
         }).isInstanceOf(IllegalArgumentException.class);
     }
