@@ -12,10 +12,10 @@ import org.springframework.data.redis.core.RedisHash;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@RedisHash(value = "refresh-token", timeToLive = 60L)
+@RedisHash(value = "refresh-token", timeToLive = 60 * 60L) // 3600초 동안 살아 있음
 public class AuthenticationToken {
     private String refreshToken;
-    
+
     @Id
     private Long memberId;
 
