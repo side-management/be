@@ -1,6 +1,5 @@
 package com.example.sidemanagementbe.auth.infrastructure.authentication;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.codec.ErrorDecoder;
 import feign.codec.StringDecoder;
 import java.io.IOException;
@@ -13,7 +12,6 @@ import org.springframework.context.annotation.Configuration;
 @RequiredArgsConstructor
 @Configuration
 public class KakaoApiConfiguration {
-    private final ObjectMapper objectMapper;
 
     @Bean
     ErrorDecoder errorDecoder() {
@@ -23,7 +21,7 @@ public class KakaoApiConfiguration {
                 try {
                     var message = stringDecoder.decode(response, String.class).toString();
                     log.error("{}", message);
-                    return new IllegalArgumentException("1234" + message);
+                    return new IllegalArgumentException("유효하지 않는 인증" + message);
                 } catch (IOException e) {
                     log.error(methodKey + "Error Deserializing response body from failed feign request response.", e);
                 }
