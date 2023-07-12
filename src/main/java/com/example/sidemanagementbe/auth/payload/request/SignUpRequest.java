@@ -1,6 +1,7 @@
 package com.example.sidemanagementbe.auth.payload.request;
 
 
+import com.example.sidemanagementbe.login.entity.Gender;
 import javax.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -15,7 +16,14 @@ import lombok.NoArgsConstructor;
 public class SignUpRequest {
     @NotNull
     private String accessToken;
-
     @NotNull
     private String email;
+
+    private String nickname;
+    private String phoneNumber;
+    private Gender gender;
+    private String birthYear;
+    private String provider;
+    private String providerId;
+    private String imageUrl;
 }

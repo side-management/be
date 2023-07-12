@@ -7,10 +7,14 @@ import org.springframework.web.bind.annotation.RequestHeader;
 
 @FeignClient(
         name = "kakaoApiClient",
-        url = "https://kapi.kakao.com"
+        url = "https://kapi.kakao.com",
+        configuration = KakaoApiConfiguration.class
 )
 public interface KakaoApiClient {
-    @GetMapping("/v2/user/me")
+    @GetMapping(path = "/v2/user/me",
+            consumes = "application/x-www-form-urlencoded", produces = "application/json"
+    )
     KaKaoProfileResponse getUserProfile(@RequestHeader("Authorization") final String accessToken);
+
 
 }
