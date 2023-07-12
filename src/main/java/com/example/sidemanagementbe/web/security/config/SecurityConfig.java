@@ -52,7 +52,7 @@ public class SecurityConfig {
                 .antMatchers("/favicon.ico", "/login/oauth/kakao/**", "/h2-console/**").permitAll()
                 .antMatchers("/swagger-ui.html", "/swagger-ui/**", "/swagger-resources/**", "/v3/api-docs/**",
                         "/v2/api-docs", "/webjars/**", "/ws", "/ws/**").permitAll()
-                .and()// 세션을 사용하지 않고 jwt 토큰을 활용
+                .and();// 세션을 사용하지 않고 jwt 토큰을 활용
 
         // 필터
         http.addFilterBefore(jwtTokenValidationFilter(), UsernamePasswordAuthenticationFilter.class);
