@@ -12,10 +12,12 @@ import com.example.sidemanagementbe.auth.payload.request.SignInRequest;
 import com.example.sidemanagementbe.auth.payload.request.SignUpRequest;
 import com.example.sidemanagementbe.auth.payload.response.SignInResponse;
 import com.example.sidemanagementbe.auth.payload.response.SignUpResponse;
+import com.example.sidemanagementbe.auth.service.impl.IssuanceTokenService;
 import com.example.sidemanagementbe.auth.service.impl.SignInService;
 import com.example.sidemanagementbe.auth.service.impl.SignUpService;
+import com.example.sidemanagementbe.web.jwt.util.JwtProvider;
 import com.example.sidemanagementbe.web.security.config.SecurityConfig;
-import com.example.sidemanagementbe.web.security.util.JwtTokenProvider;
+import com.example.sidemanagementbe.web.security.filter.CORSFilter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DisplayNameGeneration;
@@ -23,29 +25,28 @@ import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
-@DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
-@WebAppConfiguration
-@AutoConfigureMockMvc
-@WebMvcTest(controllers = {AuthController.class, SecurityConfig.class, JwtTokenProvider.class})
-class AuthControllerTest {
 
+@DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
+@WebMvcTest({AuthController.class, CORSFilter.class, SecurityConfig.class})
+class AuthControllerTest {
     @Autowired
     private MockMvc mockMvc;
-
     @Autowired
     private ObjectMapper objectMapper;
     @MockBean
     private SignUpService signUpService;
     @MockBean
     private SignInService signInService;
+    @MockBean
+    private IssuanceTokenService issuanceTokenService;
+    @MockBean
+    private JwtProvider jwtProvider;
 
 
     @Nested
@@ -55,6 +56,8 @@ class AuthControllerTest {
         void 토큰은_필수적으로_필요합니다() throws Exception {
             var signupRequest = SignUpRequest.builder()
                     .accessToken(null)
+                    .email("email")
+                    .nickname("nickname")
                     .build();
             getSignUpResultActions(signupRequest)
                     .andExpect(status().isBadRequest());
@@ -69,6 +72,8 @@ class AuthControllerTest {
                     .build();
             var signUpRequest = SignUpRequest.builder()
                     .accessToken("아무거나")
+                    .email("email")
+                    .nickname("nickname")
                     .build();
             given(signUpService.execute(any())).willReturn(signUpResponse);
 
@@ -100,6 +105,7 @@ class AuthControllerTest {
             getSignInResultActions(signInRequest)
                     .andExpectAll(status().isBadRequest());
         }
+
 
         @Test
         void 성공적으로_응답을_내려준다() throws Exception {
