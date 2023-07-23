@@ -1,6 +1,7 @@
 package com.example.sidemanagementbe.login.repository;
 
 import com.example.sidemanagementbe.login.entity.Member;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -14,4 +15,7 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     @Query("select m.nickname from Member m where m.id = :id")
     String findNicknameById(@Param("id") Long id);
 
+    Optional<Member> findByProviderId(String providerId);
+
+    Optional<Member> findByNicknameOrEmail(String nickname, String email);
 }
