@@ -61,7 +61,7 @@ jasypt:
     pool-size: 2
     string-output-type: base64
     key-obtention-iterations: 100000
-    password-file: C:/secret-key/secret-key.txt
+    secret: C:/secret-key/secret-key.txt
 
 logging:
   config: classpath:logback-spring.xml
@@ -69,3 +69,6 @@ logging:
     org.springframework.security: DEBUG
     com.example: TRACE
     org.hibernate.SQL: debug
+jwt:
+  private.key: classpath:security/jwt.key
+  public.key: classpath:security/jwt.pub

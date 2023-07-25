@@ -33,7 +33,7 @@ public class JasyptConfig {
     @Value("${jasypt.encryptor.pool-size}")
     private int poolSize;
 
-    @Value("${jasypt.encryptor.password-file}")
+    @Value("${jasypt.encryptor.secret}")
     private String passwordFile;
     @Value("${jasypt.encryptor.string-output-type}")
     private String stringOutputType;
