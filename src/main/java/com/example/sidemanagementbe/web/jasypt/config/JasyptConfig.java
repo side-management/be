@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.Properties;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jasypt.encryption.StringEncryptor;
 import org.jasypt.encryption.pbe.PooledPBEStringEncryptor;
@@ -16,7 +15,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
-import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.ResourceUtils;
 
 /**
@@ -28,7 +26,6 @@ import org.springframework.util.ResourceUtils;
 
 @Slf4j
 @Configuration
-@RequiredArgsConstructor
 @EnableEncryptableProperties
 public class JasyptConfig {
 
@@ -44,20 +41,15 @@ public class JasyptConfig {
     @Value("${jasypt.encryptor.key-obtention-iterations}")
     private int keyObtentionIterations;
 
-    private final ResourceLoader resourceLoader;
-
-
     //암호화 설정값 설정
     @Bean
     public StringEncryptor jasyptStringEncryptor() throws IOException {
-        String jasyptSecretKey;
         String key = new String(Files.readAllBytes(jasyptKeyResource.getFile().toPath()), StandardCharsets.UTF_8).trim();
-        jasyptSecretKey = key;
 
         PooledPBEStringEncryptor encryptor = new PooledPBEStringEncryptor();
         encryptor.setPoolSize(poolSize);
         encryptor.setAlgorithm(algorithm);
-        encryptor.setPassword(jasyptSecretKey);
+        encryptor.setPassword(key);
         encryptor.setStringOutputType(stringOutputType);
         encryptor.setKeyObtentionIterations(keyObtentionIterations);
 
