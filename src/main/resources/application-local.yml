@@ -61,7 +61,8 @@ jasypt:
     pool-size: 2
     string-output-type: base64
     key-obtention-iterations: 100000
-    secret: C:/secret-key/secret-key.txt
+  secret-key:
+    file-location: classpath:security/jasypt.key
 
 logging:
   config: classpath:logback-spring.xml

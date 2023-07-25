@@ -1,12 +1,13 @@
 package com.example.sidemanagementbe.web.jasypt.config;
 
 import com.ulisesbocchio.jasyptspringboot.annotation.EnableEncryptableProperties;
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileReader;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.Properties;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jasypt.encryption.StringEncryptor;
 import org.jasypt.encryption.pbe.PooledPBEStringEncryptor;
@@ -14,6 +15,8 @@ import org.jasypt.encryption.pbe.StandardPBEStringEncryptor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.ResourceUtils;
 
 /**
@@ -25,6 +28,7 @@ import org.springframework.util.ResourceUtils;
 
 @Slf4j
 @Configuration
+@RequiredArgsConstructor
 @EnableEncryptableProperties
 public class JasyptConfig {
 
@@ -33,29 +37,27 @@ public class JasyptConfig {
     @Value("${jasypt.encryptor.pool-size}")
     private int poolSize;
 
-    @Value("${jasypt.encryptor.secret}")
-    private String passwordFile;
+    @Value("${jasypt.secret-key.file-location}")
+    private Resource jasyptKeyResource;
     @Value("${jasypt.encryptor.string-output-type}")
     private String stringOutputType;
     @Value("${jasypt.encryptor.key-obtention-iterations}")
     private int keyObtentionIterations;
 
-    public JasyptConfig() {
-        String osName = System.getProperty("os.name").toLowerCase();
-        if (osName.contains("mac")) {
-            passwordFile = "/Users/jaehong/secret-key.txt";
-        } else {
-            passwordFile = "C:/secret-key/secret-key.txt";
-        }
-    }
+    private final ResourceLoader resourceLoader;
+
 
     //암호화 설정값 설정
     @Bean
-    public StringEncryptor jasyptStringEncryptor() {
+    public StringEncryptor jasyptStringEncryptor() throws IOException {
+        String jasyptSecretKey;
+        String key = new String(Files.readAllBytes(jasyptKeyResource.getFile().toPath()), StandardCharsets.UTF_8).trim();
+        jasyptSecretKey = key;
+
         PooledPBEStringEncryptor encryptor = new PooledPBEStringEncryptor();
         encryptor.setPoolSize(poolSize);
         encryptor.setAlgorithm(algorithm);
-        encryptor.setPassword(readSecretKeyFromFile(passwordFile));
+        encryptor.setPassword(jasyptSecretKey);
         encryptor.setStringOutputType(stringOutputType);
         encryptor.setKeyObtentionIterations(keyObtentionIterations);
 
@@ -77,19 +79,5 @@ public class JasyptConfig {
 
         return encryptor;
     }
-
-    private String readSecretKeyFromFile(String filePath) {
-        String secretKey = ""; // 비밀 키 값
-        try {
-            BufferedReader reader = new BufferedReader(new FileReader(filePath));
-            secretKey = reader.readLine();
-            reader.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return secretKey;
-    }
-
 
 }
